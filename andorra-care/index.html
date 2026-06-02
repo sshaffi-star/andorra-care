@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AndorraCare — Web Apps Portal</title>
+<style>
+  :root {
+    --teal: #1B5B6E;
+    --teal-dark: #134558;
+    --gold: #C9A96E;
+    --pearl: #F9F5F0;
+    --text: #2C3E50;
+    --text-light: #6B7C8D;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--pearl);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header .brand {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--teal-dark);
+    letter-spacing: -0.5px;
+  }
+  .header .brand span { color: var(--gold); }
+  .header .tagline {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .cards {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 800px;
+  }
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 36px 32px;
+    width: 320px;
+    box-shadow: 0 4px 24px rgba(27,91,110,0.10);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1.5px solid #EEE8E0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 36px rgba(27,91,110,0.16);
+  }
+  .card-icon {
+    font-size: 40px;
+    margin-bottom: 4px;
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--teal-dark);
+  }
+  .card-desc {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+  .card-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    width: fit-content;
+  }
+  .badge-patient { background: #EBF5EF; color: #3A7A5F; }
+  .badge-staff { background: #EBF5FB; color: #1A6A99; }
+  .footer {
+    margin-top: 56px;
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">Andorra<span>Care</span></div>
+    <div class="tagline">Healthcare Web Apps Portal</div>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="andorra-patient-app.html">
+      <div class="card-icon">🏥</div>
+      <div class="card-title">Patient App</div>
+      <div class="card-desc">My Health portal for patients — appointments, health records, medication tracking, and wellness resources.</div>
+      <span class="card-badge badge-patient">Patient Portal</span>
+    </a>
+    <a class="card" href="andorra-staff-dashboard.html">
+      <div class="card-icon">🩺</div>
+      <div class="card-title">Staff Dashboard</div>
+      <div class="card-desc">Operations dashboard for clinical and administrative staff — patient management, scheduling, and reporting.</div>
+      <span class="card-badge badge-staff">Staff Operations</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    AndorraCare · Sprint Release · Deployed via GitHub Pages
+  </div>
+</body>
+</html>

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andorra Care — My Health App</title>
+<style>
+  :root {
+    --teal: #1B5B6E;
+    --teal-dark: #134558;
+    --teal-light: #2A7A91;
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --pearl: #F9F5F0;
+    --pearl-dark: #F0EAE1;
+    --sage: #4A8B6F;
+    --sage-light: #EBF5EF;
+    --blush: #F5E8E8;
+    --rose: #C97A7A;
+    --white: #FFFFFF;
+    --text: #2C3E50;
+    --text-light: #6B7C8D;
+    --border: #E8E0D5;
+    --shadow: 0 4px 20px rgba(27,91,110,0.10);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--pearl);
+    color: var(--text);
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  /* ---- TOP BAR ---- */
+  .topbar {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, var(--teal-light) 100%);
+    padding: 48px 20px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .topbar::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    background: rgba(201,169,110,0.15);
+  }
+  .topbar::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 20px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .topbar-row { display: flex; align-items: center; justify-content: space-between; }
+  .logo-text { color: var(--white); }
+  .logo-text .brand { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+  .logo-text .sub { font-size: 11px; color: var(--gold-light); letter-spacing: 1px; text-transform: uppercase; }
+  .avatar-btn {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 16px; cursor: pointer;
+  }
+  .greeting { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 18px; }
+  .greeting strong { color: white; font-size: 20px; display: block; margin-top: 2px; }
+  .greeting .bismillah { font-size: 11px; color: var(--gold-light); margin-top: 4px; font-style: italic; }
+  /* ---- ALERT BANNER ---- */
+  .alert-banner {
+    margin: 14px 16px 0;
+    background: linear-gradient(135deg, #FFF3E0, #FFF8F0);
+    border: 1px solid #F5C842;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    animation: pulse-border 2s infinite;
+  }
+  @keyframes pulse-border {
+    0%,100% { border-color: #F5C842; }
+    50% { border-color: #E8971A; }
+  }
+  .alert-icon { font-size: 22px; }
+  .alert-text { flex: 1; }
+  .alert-text .title { font-size: 12px; font-weight: 700; color: #8B6200; }
+  .alert-text .msg { font-size: 11px; color: #A07020; margin-top: 1px; }
+  .alert-badge { background: #E8971A; color: white; border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+  /* ---- QUEUE CARD ---- */
+  .queue-card {
+    margin: 14px 16px 0;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%);
+    border-radius: var(--radius);
+    padding: 16px;
+    color: white;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(27,91,110,0.3);
+  }
+  .queue-num {
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 14px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+  .queue-num .label { font-size: 9px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .queue-num .number { font-size: 26px; font-weight: 800; line-height: 1; }
+  .queue-info .clinic { font-size: 13px; opacity: 0.85; }
+  .queue-info .doctor { font-size: 15px; font-weight: 700; margin: 2px 0; }
+  .queue-info .eta { font-size: 12px; color: var(--gold-light); }
+  .queue-info .eta span { font-weight: 700; font-size: 14px; }
+  /* ---- SECTION TITLE ---- */
+  .section-title {
+    padding: 20px 16px 10px;
+    font-size: 13px; font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase; letter-spacing: 1px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-title a { color: var(--teal); font-size: 12px; text-transform: none; letter-spacing: 0; font-weight: 600; cursor: pointer; }
+  /* ---- MODULE GRID ---- */
+  .module-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 16px;
+  }
+  .module-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .module-card:active { transform: scale(0.97); }
+  .module-card .mc-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .module-card .mc-title { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .module-card .mc-sub { font-size: 11px; color: var(--text-light); margin-top: 3px; line-height: 1.4; }
+  .module-card .mc-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--rose);
+    color: white; border-radius: 10px;
+    padding: 2px 7px; font-size: 10px; font-weight: 700;
+  }
+  .module-card .mc-badge.green { background: var(--sage); }
+  .module-card .mc-badge.gold { background: var(--gold); }
+  /* Colors for icons */
+  .ic-teal { background: rgba(27,91,110,0.1); }
+  .ic-gold { background: rgba(201,169,110,0.15); }
+  .ic-sage { background: rgba(74,139,111,0.12); }
+  .ic-rose { background: rgba(201,122,122,0.12); }
+  .ic-purple { background: rgba(107,77,154,0.12); }
+  .ic-blue { background: rgba(41,128,185,0.12); }
+  /* ---- PREGNANCY JOURNEY CARD (WIDE) ---- */
+  .wide-card {
+    margin: 0 16px;
+    background: linear-gradient(135deg, #F5E6F8 0%, #EBF5EF 100%);
+    border-radius: var(--radius);
+    padding: 18px;
+    border: 1px solid rgba(74,139,111,0.2);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .wide-card::after {
+    content: '🌙';
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 42px; opacity: 0.2;
+  }
+  .wide-card .wc-label { font-size: 10px; color: var(--sage); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+  .wide-card .wc-title { font-size: 17px; font-weight: 800; color: var(--text); margin: 4px 0; }
+  .wide-card .wc-sub { font-size: 12px; color: var(--text-light); }
+  .progress-bar {
+    background: rgba(74,139,111,0.2);
+    border-radius: 10px; height: 8px; margin-top: 12px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--teal));
+    border-radius: 10px;
+    width: 62%;
+    transition: width 0.5s;
+  }
+  .progress-labels { display: flex; justify-content: space-between; margin-top: 5px; }
+  .progress-labels span { font-size: 10px; color: var(--text-light); }
+  /* ---- BOTTOM NAV ---- */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: white;
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 20px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    cursor: pointer; padding: 6px 0;
+    color: var(--text-light);
+    font-size: 10px; font-weight: 600;
+    transition: color 0.2s;
+  }
+  .nav-item .nav-icon { font-size: 22px; }
+  .nav-item.active { color: var(--teal); }
+  .nav-item.active .nav-icon { transform: scale(1.15); }
+  /* ---- SCREEN OVERLAY ---- */
+  .screen {
+    display: none;
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px; height: 100vh;
+    background: var(--pearl);
+    z-index: 200;
+    overflow-y: auto;
+    padding-bottom: 90px;
+  }
+  .screen.active { display: block; }
+  .screen-header {
+    background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+    padding: 48px 20px 20px;
+    display: flex; align-items: center; gap: 14px;
+    color: white;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .back-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; cursor: pointer; border: none;
+    color: white; flex-shrink: 0;
+  }
+  .screen-header .sh-title { font-size: 18px; font-weight: 700; }
+  .screen-header .sh-sub { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+  /* ---- CARD STYLES ---- */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px;
+    margin: 14px 16px 0;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .status-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--pearl-dark); }
+  .status-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .status-label { font-size: 13px; color: var(--text-light); }
+  .status-val { font-size: 13px; font-weight: 700; color: var(--text); }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge.green { background: var(--sage-light); color: var(--sage); }
+  .badge.orange { background: #FFF3E0; color: #E67E22; }
+  .badge.red { background: var(--blush); color: var(--rose); }
+  .badge.blue { background: #EBF5FB; color: #2980B9; }
+  .badge.gold { background: rgba(201,169,110,0.15); color: #8B6200; }
+  /* APPOINTMENT FORM */
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 700; color: var(--text-light); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-control {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px; color: var(--text);
+    background: var(--pearl);
+    outline: none; transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .form-control:focus { border-color: var(--teal); background: white; }
+  .btn-primary {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-light));
+    color: white; border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 14px rgba(27,91,110,0.3);
+  }
+  .btn-secondary {
+    width: 100%; padding: 13px;
+    background: white; color: var(--teal);
+    border: 2px solid var(--teal);
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 10px;
+  }
+  /* TIMELINE */
+  .timeline-item { display: flex; gap: 14px; padding: 12px 0; position: relative; }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 17px; top: 40px;
+    width: 2px; height: calc(100% - 20px);
+    background: var(--border);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .tl-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0; z-index: 1;
+  }
+  .tl-dot.done { background: var(--sage-light); }
+  .tl-dot.active { background: var(--teal); box-shadow: 0 0 0 4px rgba(27,91,110,0.15); }
+  .tl-dot.pending { background: var(--pearl-dark); }
+  .tl-content .tl-title { font-size: 13px; font-weight: 700; color: var(--text); }
+  .tl-content .tl-date { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .tl-content .tl-note { font-size: 11px; color: var(--sage); margin-top: 4px; background: var(--sage-light); padding: 4px 8px; border-radius: 6px; display: inline-block; }
+  /* VACCINATION TABLE */
+  .vacc-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--pearl-dark); }
+  .vacc-row:last-child { border-bottom: none; }
+  .vacc-name { font-size: 12px; font-weight: 700; color: var(--text); }
+  .vacc-age { font-size: 11px; color: var(--text-light); }
+  /* GROWTH CHART mini */
+  .growth-vals { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .growth-val { background: var(--pearl-dark); border-radius: 8px; padding: 8px 12px; text-align: center; }
+  .growth-val .gv-num { font-size: 18px; font-weight: 800; color: var(--teal); }
+  .growth-val .gv-label { font-size: 10px; color: var(--text-light); }
+  /* BILLING */
+  .bill-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--pearl-dark); }
+  .bill-row:last-child { border-bottom: none; }
+  .bill-row .br-label { font-size: 13px; color: var(--text-light); }
+  .bill-row .br-val { font-size: 13px; font-weight: 700; color: var(--text); }
+  .bill-row .br-val.total { color: var(--teal); font-size: 18px; }
+  /* DISCHARGE STEPS */
+  .discharge-steps { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
+  .discharge-steps::-webkit-scrollbar { display: none; }
+  .ds-step {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    min-width: 70px;
+    border: 2px solid var(--border);
+  }
+  .ds-step .ds-icon { font-size: 22px; margin-bottom: 4px; }
+  .ds-step .ds-label { font-size: 10px; font-weight: 700; color: var(--text-light); }
+  .ds-step.done { border-color: var(--sage); background: var(--sage-light); }
+  .ds-step.done .ds-label { color: var(--sage); }
+  .ds-step.active { border-color: var(--gold); background: rgba(201,169,110,0.1); animation: pulse-border 1.5s infinite; }
+  .ds-step.active .ds-label { color: #8B6200; }
+  /* EDUCATION CARDS */
+  .edu-card {
+    display: flex; gap: 12px; align-items: center;
+    background: white; border-radius: var(--radius-sm);
+    padding: 14px; margin-bottom: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .edu-card .ec-icon { font-size: 30px; }
+  .edu-card .ec-title { font-size: 13px; font-weight: 700; color: var(--text); }
+  .edu-card .ec-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .edu-card .ec-time { font-size: 10px; color: var(--teal); font-weight: 600; }
+  /* FEEDBACK */
+  .star-row { display: flex; gap: 8px; margin: 12px 0; }
+  .star { font-size: 32px; cursor: pointer; transition: transform 0.1s; filter: grayscale(1); }
+  .star.lit { filter: grayscale(0); }
+  .star:active { transform: scale(1.3); }
+  .feedback-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip {
+    padding: 7px 14px; border-radius: 20px;
+    border: 1.5px solid var(--border); font-size: 12px; font-weight: 600;
+    color: var(--text-light); cursor: pointer; background: white;
+    transition: all 0.2s;
+  }
+  .chip.selected { border-color: var(--teal); color: var(--teal); background: rgba(27,91,110,0.07); }
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--text); color: white; padding: 12px 24px;
+    border-radius: 40px; font-size: 13px; font-weight: 600;
+    z-index: 999; transition: transform 0.3s; white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  /* WHATSAPP BTN */
+  .wa-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: calc(100% - 32px); margin: 14px 16px;
+    padding: 16px; border-radius: var(--radius);
+    background: #25D366; color: white;
+    font-size: 15px; font-weight: 700;
+    text-decoration: none; box-shadow: 0 4px 14px rgba(37,211,102,0.35);
+  }
+  /* SCROLLABLE CONTENT */
+  .scroll-content { padding-bottom: 100px; }
+  /* PHONE MOCKUP WRAPPER */
+  .phone-wrapper {
+    position: relative;
+    padding-bottom: 80px;
+  }
+  /* NPS */
+  .nps-row { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+  .nps-btn {
+    width: 38px; height: 38px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: white;
+    font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text);
+    transition: all 0.15s;
+  }
+  .nps-btn:hover, .nps-btn.sel { background: var(--teal); color: white; border-color: var(--teal); }
+  /* PHARMACY */
+  .rx-item { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--pearl-dark); }
+  .rx-item:last-child { border-bottom: none; }
+  .rx-icon { width: 40px; height: 40px; background: rgba(27,91,110,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .rx-name { font-size: 13px; font-weight: 700; color: var(--text); }
+  .rx-dose { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  /* RESULTS */
+  .result-item { padding: 12px 0; border-bottom: 1px solid var(--pearl-dark); }
+  .result-item:last-child { border-bottom: none; }
+  .result-item .ri-head { display: flex; justify-content: space-between; align-items: center; }
+  .ri-name { font-size: 13px; font-weight: 700; color: var(--text); }
+  .ri-date { font-size: 11px; color: var(--text-light); }
+  .ri-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+  /* PROFILE */
+  .profile-header { text-align: center; padding: 20px; }
+  .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--gold); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: white; border: 4px solid white; box-shadow: 0 4px 14px rgba(201,169,110,0.4); }
+  .profile-name { font-size: 20px; font-weight: 800; color: var(--text); }
+  .profile-id { font-size: 12px; color: var(--text-light); }
+  .profile-row { display: flex; justify-content: space-around; margin: 16px 0; }
+  .profile-stat { text-align: center; }
+  .profile-stat .ps-num { font-size: 22px; font-weight: 800; color: var(--teal); }
+  .profile-stat .ps-label { font-size: 11px; color: var(--text-light); }
+  .profile-menu-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: white; border-bottom: 1px solid var(--pearl-dark); cursor: pointer; }
+  .profile-menu-item .pmi-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(27,91,110,0.1); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .profile-menu-item .pmi-label { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+  .profile-menu-item .pmi-arrow { color: var(--text-light); font-size: 14px; }
+  /* JOURNEY wellness */
+  .wellness-pillars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .wellness-pillar { background: white; border-radius: var(--radius-sm); padding: 14px; text-align: center; border: 1px solid var(--border); }
+  .wellness-pillar .wp-icon { font-size: 28px; margin-bottom: 6px; }
+  .wellness-pillar .wp-title { font-size: 12px; font-weight: 800; color: var(--text); }
+  .wellness-pillar .wp-sub { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+  .wp-bar { height: 5px; border-radius: 5px; background: var(--pearl-dark); margin-top: 8px; overflow: hidden; }
+  .wp-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--teal), var(--gold)); }
+</style>
+</head>
+<body>
+
+<!-- ===== MAIN HOME SCREEN ===== -->
+<div id="screen-home" class="phone-wrapper scroll-content">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="logo-text">
+        <div class="brand">ANDORRA</div>
+        <div class="sub">Women & Children Hospital</div>
+      </div>
+      <div class="avatar-btn" onclick="showScreen('screen-profile')">N</div>
+    </div>
+    <div class="greeting">
+      Assalamualaikum,
+      <strong>Nur Aisyah 🌸</strong>
+      <div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ — In the name of Allah, the Most Gracious</div>
+    </div>
+  </div>
+
+  <!-- Doctor Delay Alert -->
+  <div class="alert-banner" onclick="showScreen('screen-queue')">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <div class="title">Doctor Delay Alert</div>
+      <div class="msg">Dr. Faridah Bt Hassan — delayed ~25 min (in OT)</div>
+    </div>
+    <div class="alert-badge">Live</div>
+  </div>
+
+  <!-- Virtual Queue Card -->
+  <div class="queue-card" onclick="showScreen('screen-queue')">
+    <div class="queue-num">
+      <div class="label">Your</div>
+      <div class="number">B47</div>
+    </div>
+    <div class="queue-info">
+      <div class="clinic">O&G Clinic — Level 2</div>
+      <div class="doctor">Dr. Faridah Bt Hassan</div>
+      <div class="eta">Est. waiting: <span>~40 min</span> (3 before you)</div>
+    </div>
+  </div>
+
+  <!-- Pregnancy Journey Wide Card -->
+  <div class="section-title">My Journey</div>
+  <div class="wide-card" onclick="showScreen('screen-pregnancy')">
+    <div class="wc-label">My Pregnancy Journey</div>
+    <div class="wc-title">Week 24 — 2nd Trimester 🤰</div>
+    <div class="wc-sub">Next scan: Detailed Anomaly Scan — Jun 5, 2026</div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+    <div class="progress-labels">
+      <span>Week 1</span>
+      <span>Week 24 (Now)</span>
+      <span>Week 40</span>
+    </div>
+  </div>
+
+  <!-- Quick Modules -->
+  <div class="section-title">Quick Access <a onclick="showScreen('screen-all')">See All</a></div>
+  <div class="module-grid">
+    <div class="module-card" onclick="showScreen('screen-appt')">
+      <div class="mc-icon ic-teal">📅</div>
+      <div class="mc-title">My Appointment</div>
+      <div class="mc-sub">Next: Jun 5, 2026</div>
+    </div>
+    <div class="module-card" onclick="showScreen('screen-discharge')">
+      <div class="mc-icon ic-gold">🏥</div>
+      <div class="mc-title">Discharge Tracker</div>
+      <div class="mc-sub">Est. today 3:00 PM</div>
+      <div class="mc-badge gold">Active</div>
+    </div>
+    <div class="module-card" onclick="showScreen('screen-bill')">
+      <div class="mc-icon ic-blue">💳</div>
+      <div class="mc-title">My Bill</div>
+      <div class="mc-sub">RM 2,450 outstanding</div>
+      <div class="mc-badge">Pay</div>
+    </div>
+    <div class="module-card" onclick="showScreen('screen-pharmacy')">
+      <div class="mc-icon ic-sage">💊</div>
+      <div class="mc-title">My Medication</div>
+      <div class="mc-sub">3 items ready</div>
+      <div class="mc-badge green">Ready</div>
+    </div>
+    <div class="module-card" onclick="showScreen('screen-child')">
+      <div class="mc-icon ic-rose">👶</div>
+      <div class="mc-title">My Child Health</div>
+      <div class="mc-sub">Aiman, 14 months</div>
+    </div>
+    <div class="module-card" onclick="showScreen('screen-results')">
+      <div class="mc-icon ic-purple">🧪</div>
+      <div class="mc-title">My Results</div>
+      <div class="mc-sub">2 new results</div>
+      <div class="mc-badge">New</div>
+    </div>
+  </div>
+
+  <div class="section-title">Wellness & Education</div>
+  <div style="padding: 0 16px; margin-bottom: 10px;">
+    <div class="wellness-pillars">
+      <div class="wellness-pillar" onclick="showScreen('screen-edu')">
+        <div class="wp-icon">🧠</div>
+        <div class="wp-title">IQ</div>
+        <div class="wp-sub">Knowledge</div>
+        <div class="wp-bar"><div class="wp-fill" style="width:78%"></div></div>
+      </div>
+      <div class="wellness-pillar" onclick="showScreen('screen-edu')">
+        <div class="wp-icon">❤️</div>
+        <div class="wp-title">EQ</div>
+        <div class="wp-sub">Emotional</div>
+        <div class="wp-bar"><div class="wp-fill" style="width:65%"></div></div>
+      </div>
+      <div class="wellness-pillar" onclick="showScreen('screen-edu')">
+        <div class="wp-icon">🌙</div>
+        <div class="wp-title">SQ</div>
+        <div class="wp-sub">Spiritual</div>
+        <div class="wp-bar"><div class="wp-fill" style="width:82%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin: 0 16px 10px;">
+    <div class="edu-card" onclick="showScreen('screen-edu')">
+      <div class="ec-icon">📚</div>
+      <div>
+        <div class="ec-title">Education Library</div>
+        <div class="ec-sub">Pregnancy, parenting & Islamic motherhood</div>
+        <div class="ec-time">12 articles • Updated today</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WhatsApp -->
+  <a href="https://wa.me/60133332671?text=Hi%20Andorra%20Hospital%20-%20I%20need%20assistance" class="wa-btn" target="_blank">
+    💬 &nbsp;Chat with Us on WhatsApp
+  </a>
+
+  <div style="text-align:center; padding: 10px 16px 20px; font-size:11px; color:var(--text-light);">
+    Andorra Women & Children Hospital<br>
+    19 Jalan Utama Suria Tropika 1, Seri Kembangan, Selangor<br>
+    📞 +603 8966 1133 | PDPA Protected
+  </div>
+</div>
+
+<!-- ===== APPOINTMENT SCREEN ===== -->
+<div id="screen-appt" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">My Appointments</div>
+      <div class="sh-sub">Book, reschedule & manage visits</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="card-title">📅 Upcoming Appointment</div>
+      <div class="status-row"><span class="status-label">Date & Time</span><span class="status-val">Thu, 5 Jun 2026 — 10:00 AM</span></div>
+      <div class="status-row"><span class="status-label">Doctor</span><span class="status-val">Dr. Faridah Bt Hassan</span></div>
+      <div class="status-row"><span class="status-label">Specialty</span><span class="status-val">Obstetrics & Gynaecology</span></div>
+      <div class="status-row"><span class="status-label">Type</span><span class="status-val">Detailed Anomaly Scan</span></div>
+      <div class="status-row"><span class="status-label">Status</span><span class="badge green">✓ Confirmed</span></div>
+      <div style="display:flex; gap:10px; margin-top:14px;">
+        <button class="btn-secondary" style="margin:0;flex:1">Reschedule</button>
+        <button class="btn-primary" style="flex:1" onclick="showToast('Reminder set for Jun 4!')">Set Reminder</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">➕ Book New Appointment</div>
+      <div class="form-group">
+        <label class="form-label">Specialty</label>
+        <select class="form-control">
+          <option>Obstetrics & Gynaecology</option>
+          <option>Paediatrics</option>
+          <option>Psychiatry</option>
+          <option>Dermatology</option>
+          <option>Radiology</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preferred Doctor</label>
+        <select class="form-control">
+          <option>Dr. Faridah Bt Hassan</option>
+          <option>Dr. Nurul Izzati Zainol</option>
+          <option>Dr. Mohd Arif Rashid</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" value="2026-06-15">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preferred Time</label>
+        <select class="form-control">
+          <option>9:00 AM</option>
+          <option>10:00 AM</option>
+          <option>11:00 AM</option>
+          <option>2:00 PM</option>
+          <option>3:00 PM</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason for Visit</label>
+        <textarea class="form-control" rows="2" placeholder="Brief description..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="showToast('Appointment request sent! ✓')">Request Appointment</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🕐 Past Appointments</div>
+      <div class="status-row"><span class="status-label">8 May 2026 — Dr. Faridah</span><span class="badge green">Attended</span></div>
+      <div class="status-row"><span class="status-label">22 Apr 2026 — Dr. Faridah</span><span class="badge green">Attended</span></div>
+      <div class="status-row"><span class="status-label">1 Apr 2026 — Dr. Faridah</span><span class="badge green">Attended</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIRTUAL QUEUE SCREEN ===== -->
+<div id="screen-queue" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">Virtual Queue</div>
+      <div class="sh-sub">Real-time waiting status</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card" style="text-align:center; padding:30px 18px;">
+      <div style="font-size:13px; color:var(--text-light); text-transform:uppercase; letter-spacing:1px;">Your Queue Number</div>
+      <div style="font-size:80px; font-weight:900; color:var(--teal); line-height:1; margin:10px 0;">B47</div>
+      <div style="font-size:14px; color:var(--text-light);">O&G Clinic — Level 2</div>
+      <div style="background:var(--pearl-dark); border-radius:var(--radius-sm); padding:12px; margin:16px 0; display:flex; justify-content:space-around;">
+        <div><div style="font-size:22px; font-weight:800; color:var(--teal)">3</div><div style="font-size:11px; color:var(--text-light)">Patients Before You</div></div>
+        <div><div style="font-size:22px; font-weight:800; color:var(--gold)">~40</div><div style="font-size:11px; color:var(--text-light)">Minutes Wait</div></div>
+        <div><div style="font-size:22px; font-weight:800; color:var(--sage)">B44</div><div style="font-size:11px; color:var(--text-light)">Now Serving</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="border-left:4px solid #E67E22; background:linear-gradient(135deg,#FFF8F0,white);">
+      <div class="card-title">⚠️ Doctor Delay Alert</div>
+      <div style="font-size:14px; font-weight:700; color:#E67E22; margin-bottom:6px;">Dr. Faridah Bt Hassan is delayed</div>
+      <div style="font-size:13px; color:var(--text-light); line-height:1.6;">Reason: Currently attending to an emergency in OT<br>
+      Estimated delay: <strong>25 minutes</strong><br>
+      New estimated time for B47: <strong>11:05 AM</strong></div>
+      <div style="margin-top:12px; font-size:12px; color:var(--text-light);">Last updated: 10:18 AM — Staff: Nurse Hidayah</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Clinic Queue Status</div>
+      <div class="status-row"><span class="status-label">🟢 B44 — B46</span><span class="badge green">Being Seen</span></div>
+      <div class="status-row"><span class="status-label">🟡 B47 — B50</span><span class="badge gold">Your Batch</span></div>
+      <div class="status-row"><span class="status-label">⚪ B51 — B55</span><span class="badge">Waiting</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💡 While You Wait</div>
+      <div class="edu-card" style="margin-bottom:8px;" onclick="showScreen('screen-edu')">
+        <div class="ec-icon">🤱</div>
+        <div><div class="ec-title">Breastfeeding Tips for Week 24</div><div class="ec-sub">5 min read</div></div>
+      </div>
+      <div class="edu-card" style="margin-bottom:0;" onclick="showScreen('screen-edu')">
+        <div class="ec-icon">🧘</div>
+        <div><div class="ec-title">Prenatal Breathing Exercises</div><div class="ec-sub">3 min video</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PREGNANCY JOURNEY SCREEN ===== -->
+<div id="screen-pregnancy" class="screen">
+  <div class="screen-header" style="background:linear-gradient(135deg,#5B4E8A,#8A6BAD);">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">My Pregnancy Journey 🤰</div>
+      <div class="sh-sub">Your personalised antenatal companion</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="wide-card" style="margin:14px 16px 0; background:linear-gradient(135deg,#F0E8F8,#E8F4EE);">
+      <div class="wc-label">Current Stage</div>
+      <div class="wc-title">Week 24 of 40 — 2nd Trimester</div>
+      <div class="wc-sub">Your baby is the size of an ear of corn! 🌽<br>Baby can now hear your voice — recite Al-Quran often.</div>
+      <div class="progress-bar" style="margin-top:14px;"><div class="progress-fill"></div></div>
+      <div class="progress-labels"><span>1st Trimester</span><span>2nd (Now)</span><span>3rd</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔴 High Risk Alert</div>
+      <div style="background:var(--blush); border-radius:var(--radius-sm); padding:12px; font-size:13px; color:#8B2020; line-height:1.6;">
+        <strong>⚠ GDM Monitoring Required</strong><br>
+        Your gestational diabetes requires weekly blood glucose monitoring. Please log readings daily.
+      </div>
+      <button class="btn-primary" style="margin-top:12px;" onclick="showToast('Blood glucose log opened')">Log Today's Reading</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 Antenatal Schedule</div>
+      <div class="timeline-item">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-content">
+          <div class="tl-title">1st Trimester Booking Visit</div>
+          <div class="tl-date">12 Feb 2026 — Completed</div>
+          <div class="tl-note">Blood tests, dating scan — OK</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-content">
+          <div class="tl-title">Nuchal Translucency Scan</div>
+          <div class="tl-date">18 Mar 2026 — Normal result</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot active">🔵</div>
+        <div class="tl-content">
+          <div class="tl-title">Detailed Anomaly Scan (20 weeks)</div>
+          <div class="tl-date">📍 5 Jun 2026, 10:00 AM — Upcoming</div>
+          <div class="tl-note">Bring partner — gender can be revealed</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot pending">⚪</div>
+        <div class="tl-content">
+          <div class="tl-title">3rd Trimester Check (28 weeks)</div>
+          <div class="tl-date">Est. July 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🌙 Islamic Pregnancy Wellness</div>
+      <div class="edu-card" style="margin-bottom:8px; background:var(--pearl-dark);">
+        <div class="ec-icon">📿</div>
+        <div>
+          <div class="ec-title">Doa & Surah for Pregnancy</div>
+          <div class="ec-sub">Surah Maryam, Al-Anbiya, Az-Zumar</div>
+          <div class="ec-time">Daily practice guide</div>
+        </div>
+      </div>
+      <div class="edu-card" style="background:var(--pearl-dark);">
+        <div class="ec-icon">🤲</div>
+        <div>
+          <div class="ec-title">Maqasid Syariah — Hifz An-Nasl</div>
+          <div class="ec-sub">Protecting the lineage: prenatal spiritual prep</div>
+          <div class="ec-time">Islamic principle series</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💪 EQ · IQ · SQ Journey</div>
+      <div style="font-size:13px; color:var(--text-light); line-height:1.7; margin-bottom:12px;">
+        Raise a child with excellence in emotional wisdom, intellectual curiosity, and spiritual depth — in line with Islamic parenting (tarbiyyah) from womb to age 18.
+      </div>
+      <div class="wellness-pillars">
+        <div class="wellness-pillar">
+          <div class="wp-icon">🧠</div>
+          <div class="wp-title">IQ</div>
+          <div class="wp-sub">Stimulate baby's senses now</div>
+          <div class="wp-bar"><div class="wp-fill" style="width:78%"></div></div>
+        </div>
+        <div class="wellness-pillar">
+          <div class="wp-icon">❤️</div>
+          <div class="wp-title">EQ</div>
+          <div class="wp-sub">Bond through touch & voice</div>
+          <div class="wp-bar"><div class="wp-fill" style="width:65%"></div></div>
+        </div>
+        <div class="wellness-pillar">
+          <div class="wp-icon">🌙</div>
+          <div class="wp-title">SQ</div>
+          <div class="wp-sub">Quran, dhikr & prayer</div>
+          <div class="wp-bar"><div class="wp-fill" style="width:90%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHILD HEALTH SCREEN ===== -->
+<div id="screen-child" class="screen">
+  <div class="screen-header" style="background:linear-gradient(135deg,#C97A7A,#E8971A);">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">My Child Health 👶</div>
+      <div class="sh-sub">Aiman Haziq — 14 months old</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card" style="background:linear-gradient(135deg,#FFF5EE,#FFF0F0);">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--rose);display:flex;align-items:center;justify-content:center;font-size:26px;">👦</div>
+        <div>
+          <div style="font-size:17px;font-weight:800;">Aiman Haziq</div>
+          <div style="font-size:13px;color:var(--text-light);">Born: 28 Mar 2025 • 14 months</div>
+          <div class="badge blue" style="margin-top:4px;">Blood Type: O+</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📏 Growth Chart</div>
+      <div class="growth-vals">
+        <div class="growth-val"><div class="gv-num">9.8<small style="font-size:12px;">kg</small></div><div class="gv-label">Weight</div></div>
+        <div class="growth-val"><div class="gv-num">76<small style="font-size:12px;">cm</small></div><div class="gv-label">Height</div></div>
+        <div class="growth-val"><div class="gv-num">46<small style="font-size:12px;">cm</small></div><div class="gv-label">Head</div></div>
+        <div class="growth-val" style="background:var(--sage-light);"><div class="gv-num" style="color:var(--sage)">50th</div><div class="gv-label">Percentile</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💉 Vaccination Record</div>
+      <div class="vacc-row">
+        <div><div class="vacc-name">BCG</div><div class="vacc-age">At birth</div></div>
+        <div class="badge green">✓ Done</div>
+      </div>
+      <div class="vacc-row">
+        <div><div class="vacc-name">Hepatitis B (3 doses)</div><div class="vacc-age">0, 1, 6 months</div></div>
+        <div class="badge green">✓ Done</div>
+      </div>
+      <div class="vacc-row">
+        <div><div class="vacc-name">MMR</div><div class="vacc-age">12 months</div></div>
+        <div class="badge green">✓ Done</div>
+      </div>
+      <div class="vacc-row">
+        <div><div class="vacc-name">Chickenpox (Varicella)</div><div class="vacc-age">15 months</div></div>
+        <div class="badge orange">⚡ Due Soon</div>
+      </div>
+      <div class="vacc-row">
+        <div><div class="vacc-name">MMR Booster</div><div class="vacc-age">18 months</div></div>
+        <div class="badge">Upcoming</div>
+      </div>
+      <button class="btn-primary" style="margin-top:12px;" onclick="showToast('Vaccination reminder set!')">Set Reminder for Varicella</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🌟 Developmental Milestones</div>
+      <div class="status-row"><span class="status-label">🚶 Walking independently</span><span class="badge green">✓ Achieved</span></div>
+      <div class="status-row"><span class="status-label">💬 First words (5+ words)</span><span class="badge green">✓ Achieved</span></div>
+      <div class="status-row"><span class="status-label">🖐 Pointing to objects</span><span class="badge green">✓ Achieved</span></div>
+      <div class="status-row"><span class="status-label">🥄 Using spoon</span><span class="badge orange">In Progress</span></div>
+      <div class="status-row"><span class="status-label">📚 Simple instructions (18mo)</span><span class="badge">Upcoming</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🌙 Islamic Tarbiyyah Milestones (to age 18)</div>
+      <div style="font-size:12px;color:var(--text-light);line-height:1.7;">
+        <div style="margin-bottom:8px;"><strong>👶 Age 0–2:</strong> Azan at birth, Bismillah in feeding, Quran lullabies</div>
+        <div style="margin-bottom:8px;"><strong>🌱 Age 3–6:</strong> Al-Fatihah, doa makan, basic pillars</div>
+        <div style="margin-bottom:8px;"><strong>📖 Age 7–12:</strong> Solat, fasting, Quran recitation</div>
+        <div><strong>🎓 Age 13–18:</strong> Aqilah, mumayyiz, character formation</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DISCHARGE TRACKER ===== -->
+<div id="screen-discharge" class="screen">
+  <div class="screen-header" style="background:linear-gradient(135deg,#8B6200,var(--gold));">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">Discharge Tracker 🏥</div>
+      <div class="sh-sub">Live discharge progress</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card" style="text-align:center; padding:24px;">
+      <div style="font-size:13px;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;">Estimated Discharge</div>
+      <div style="font-size:36px;font-weight:900;color:var(--teal);margin:8px 0;">Today 3:00 PM</div>
+      <div class="badge orange">⏳ In Progress</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Discharge Steps</div>
+      <div class="discharge-steps">
+        <div class="ds-step done"><div class="ds-icon">🩺</div><div class="ds-label">Doctor Clearance</div></div>
+        <div class="ds-step done"><div class="ds-icon">🩻</div><div class="ds-label">Nursing Sign-off</div></div>
+        <div class="ds-step active"><div class="ds-icon">💊</div><div class="ds-label">Pharmacy</div></div>
+        <div class="ds-step"><div class="ds-icon">💳</div><div class="ds-label">Billing</div></div>
+        <div class="ds-step"><div class="ds-icon">🚗</div><div class="ds-label">Go Home!</div></div>
+      </div>
+      <div style="margin-top:14px;font-size:13px;color:#8B6200;background:rgba(201,169,110,0.1);padding:10px;border-radius:var(--radius-sm);">
+        ⏳ Waiting: Pharmacy is preparing your discharge medication (Est. 45 min)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 Step Details</div>
+      <div class="status-row"><span class="status-label">✅ Doctor Clearance</span><span class="badge green">Done 12:30 PM</span></div>
+      <div class="status-row"><span class="status-label">✅ Nursing Notes</span><span class="badge green">Done 1:00 PM</span></div>
+      <div class="status-row"><span class="status-label">💊 Pharmacy Dispensing</span><span class="badge orange">In Progress</span></div>
+      <div class="status-row"><span class="status-label">💳 Final Billing</span><span class="badge">Pending</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📞 Need Help?</div>
+      <button class="btn-secondary" onclick="showToast('Nurse will attend to you shortly!')">Call Nurse Station</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BILLING SCREEN ===== -->
+<div id="screen-bill" class="screen">
+  <div class="screen-header" style="background:linear-gradient(135deg,#1A3A6E,#2A5A9E);">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">My Bill 💳</div>
+      <div class="sh-sub">Billing summary & payment</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card" style="background:linear-gradient(135deg,#EBF5FB,white);">
+      <div class="card-title">🏥 Admission — May 26, 2026</div>
+      <div class="bill-row"><span class="br-label">Room & Board (2 days)</span><span class="br-val">RM 900</span></div>
+      <div class="bill-row"><span class="br-label">Doctor Professional Fees</span><span class="br-val">RM 750</span></div>
+      <div class="bill-row"><span class="br-label">Obstetric Procedures</span><span class="br-val">RM 1,200</span></div>
+      <div class="bill-row"><span class="br-label">Lab & Investigations</span><span class="br-val">RM 380</span></div>
+      <div class="bill-row"><span class="br-label">Medication</span><span class="br-val">RM 220</span></div>
+      <div class="bill-row"><span class="br-label">Subtotal</span><span class="br-val">RM 3,450</span></div>
+      <div class="bill-row"><span class="br-label">Deposit Paid</span><span class="br-val" style="color:var(--sage)">− RM 1,000</span></div>
+      <div class="bill-row" style="border-top:2px solid var(--teal);margin-top:4px;padding-top:12px;">
+        <span class="br-label" style="font-weight:800;font-size:15px;">Outstanding Balance</span>
+        <span class="br-val total">RM 2,450</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💳 Pay Now</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div style="border:2px solid var(--teal);border-radius:var(--radius-sm);padding:12px;text-align:center;cursor:pointer;">
+          <div style="font-size:22px;">📱</div>
+          <div style="font-size:12px;font-weight:700;color:var(--teal);">DuitNow QR</div>
+        </div>
+        <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;cursor:pointer;">
+          <div style="font-size:22px;">💳</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-light);">Card Payment</div>
+        </div>
+        <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;cursor:pointer;">
+          <div style="font-size:22px;">🏦</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-light);">Online Banking</div>
+        </div>
+        <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;cursor:pointer;">
+          <div style="font-size:22px;">🧾</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-light);">Insurance / Panel</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showToast('Redirecting to secure payment...')">Pay RM 2,450 Now</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📄 Insurance / Panel</div>
+      <div class="status-row"><span class="status-label">Panel Provider</span><span class="status-val">Takaful Malaysia</span></div>
+      <div class="status-row"><span class="status-label">Claim Status</span><span class="badge orange">Processing</span></div>
+      <div class="status-row"><span class="status-label">Approved Amount</span><span class="status-val">RM 2,000</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PHARMACY SCREEN ===== -->
+<div id="screen-pharmacy" class="screen">
+  <div class="screen-header" style="background:linear-gradient(135deg,var(--sage),#2D6A4F);">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">My Medication 💊</div>
+      <div class="sh-sub">Prescription & pharmacy status</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card" style="text-align:center;padding:20px;background:var(--sage-light);">
+      <div style="font-size:22px;">✅</div>
+      <div style="font-size:16px;font-weight:700;color:var(--sage);margin:6px 0;">3 Items Ready for Collection</div>
+      <div style="font-size:12px;color:var(--text-light);">Pharmacy Counter 2 — Ground Floor</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💊 Prescribed Medications</div>
+      <div class="rx-item">
+        <div class="rx-icon">💊</div>
+        <div style="flex:1">
+          <div class="rx-name">Folic Acid 5mg</div>
+          <div class="rx-dose">1 tablet daily — 30 days supply</div>
+        </div>
+        <div class="badge green">Ready</div>
+      </div>
+      <div class="rx-item">
+        <div class="rx-icon">💊</div>
+        <div style="flex:1">
+          <div class="rx-name">Ferrous Sulphate 200mg</div>
+          <div class="rx-dose">1 tablet twice daily — 30 days</div>
+        </div>
+        <div class="badge green">Ready</div>
+      </div>
+      <div class="rx-item">
+        <div class="rx-icon">💊</div>
+        <div style="flex:1">
+          <div class="rx-name">Metformin 500mg (GDM)</div>
+          <div class="rx-dose">1 tablet with meals — 30 days</div>
+        </div>
+        <div class="badge green">Ready</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🚗 Home Delivery Option</div>
+      <div style="font-size:13px;color:var(--text-light);margin-bottom:14px;line-height:1.6;">
+        Can't collect? We'll deliver to your home within Klang Valley. Same-day delivery available before 2:00 PM.
+      </div>
+      <button class="btn-primary" onclick="showToast('Delivery request submitted!')">Request Home Delivery</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RESULTS SCREEN ===== -->
+<div id="screen-results" class="screen">
+  <div class="screen-header" style="background:linear-gradient(135deg,#6B4D9A,#9B6FBF);">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">My Results 🧪</div>
+      <div class="sh-sub">Lab & radiology reports</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="card-title">🆕 New Results</div>
+      <div class="result-item">
+        <div class="ri-head">
+          <div class="ri-name">Blood Glucose (GDM Screen)</div>
+          <div class="badge orange">Review</div>
+        </div>
+        <div class="ri-date">28 May 2026 — Dr. Faridah</div>
+        <div class="ri-sub">Fasting: 5.8 mmol/L | 2hr: 8.2 mmol/L — slightly elevated, diet modification advised</div>
+      </div>
+      <div class="result-item">
+        <div class="ri-head">
+          <div class="ri-name">Full Blood Count (FBC)</div>
+          <div class="badge green">Normal</div>
+        </div>
+        <div class="ri-date">28 May 2026</div>
+        <div class="ri-sub">Hb: 11.8 g/dL — mildly low, continue iron supplementation</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Previous Results</div>
+      <div class="result-item">
+        <div class="ri-head"><div class="ri-name">Nuchal Translucency Scan</div><div class="badge green">Normal</div></div>
+        <div class="ri-date">18 Mar 2026</div>
+        <div class="ri-sub">NT thickness: 1.8mm — Low risk result</div>
+      </div>
+      <div class="result-item">
+        <div class="ri-head"><div class="ri-name">TORCH Screen</div><div class="badge green">Negative</div></div>
+        <div class="ri-date">12 Feb 2026</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDUCATION LIBRARY ===== -->
+<div id="screen-edu" class="screen">
+  <div class="screen-header" style="background:linear-gradient(135deg,#2D6A4F,var(--sage));">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">Education Library 📚</div>
+      <div class="sh-sub">Your knowledge & wellness guide</div>
+    </div>
+  </div>
+  <div class="scroll-content" style="padding:14px 16px 100px;">
+    <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;">
+      <div class="chip selected">All</div>
+      <div class="chip" onclick="this.className='chip selected'">Pregnancy</div>
+      <div class="chip">Newborn</div>
+      <div class="chip">Islamic</div>
+      <div class="chip">Mental Health</div>
+    </div>
+
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">🤰</div>
+      <div><div class="ec-title">2nd Trimester: What to Expect</div><div class="ec-sub">Week-by-week guide for weeks 13–27</div><div class="ec-time">8 min read</div></div>
+    </div>
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">🍽️</div>
+      <div><div class="ec-title">Gestational Diabetes Diet Plan</div><div class="ec-sub">Halal-friendly meal guide for GDM mums</div><div class="ec-time">6 min read</div></div>
+    </div>
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">🤱</div>
+      <div><div class="ec-title">Breastfeeding — Islamic Perspective</div><div class="ec-sub">2 years of breastfeeding in the Quran (2:233)</div><div class="ec-time">5 min read</div></div>
+    </div>
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">👶</div>
+      <div><div class="ec-title">Newborn Care: First 40 Days</div><div class="ec-sub">Confinement, aqiqah & neonatal care</div><div class="ec-time">10 min read</div></div>
+    </div>
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">🧠</div>
+      <div><div class="ec-title">Building Your Child's IQ — 0 to 5</div><div class="ec-sub">Stimulation, play & early learning strategies</div><div class="ec-time">7 min read</div></div>
+    </div>
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">❤️</div>
+      <div><div class="ec-title">Postpartum Mental Wellness (EQ)</div><div class="ec-sub">Baby blues vs PPD — recognising the signs</div><div class="ec-time">6 min read</div></div>
+    </div>
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">🌙</div>
+      <div><div class="ec-title">Spiritual Motherhood (SQ)</div><div class="ec-sub">Maqasid Syariah & raising pious children</div><div class="ec-time">9 min read</div></div>
+    </div>
+    <div class="edu-card" onclick="showToast('Article opened!')">
+      <div class="ec-icon">🌡️</div>
+      <div><div class="ec-title">Child Fever — Red Flags</div><div class="ec-sub">When to go to A&E immediately</div><div class="ec-time">4 min read</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FEEDBACK SCREEN ===== -->
+<div id="screen-feedback" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="sh-title">My Feedback ⭐</div>
+      <div class="sh-sub">Share your experience</div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="card-title">⭐ Rate Your Visit</div>
+      <div style="font-size:13px;color:var(--text-light);margin-bottom:6px;">Overall experience — 28 May 2026</div>
+      <div class="star-row" id="stars">
+        <span class="star" onclick="rateStar(1)">⭐</span>
+        <span class="star" onclick="rateStar(2)">⭐</span>
+        <span class="star" onclick="rateStar(3)">⭐</span>
+        <span class="star" onclick="rateStar(4)">⭐</span>
+        <span class="star" onclick="rateStar(5)">⭐</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👍 What went well?</div>
+      <div class="feedback-chips">
+        <div class="chip" onclick="toggleChip(this)">Friendly staff</div>
+        <div class="chip" onclick="toggleChip(this)">Clean facility</div>
+        <div class="chip" onclick="toggleChip(this)">Fast service</div>
+        <div class="chip" onclick="toggleChip(this)">Good doctor</div>
+        <div class="chip" onclick="toggleChip(this)">Easy parking</div>
+        <div class="chip" onclick="toggleChip(this)">Clear explanation</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 Comments or Complaint</div>
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select class="form-control">
+          <option>Compliment</option>
+          <option>Suggestion</option>
+          <option>Complaint</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your message</label>
+        <textarea class="form-control" rows="4" placeholder="Tell us about your experience..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="showToast('Thank you for your feedback! 🙏')">Submit Feedback</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Net Promoter Score</div>
+      <div style="font-size:13px;color:var(--text-light);margin-bottom:10px;">How likely are you to recommend Andorra to family or friends?</div>
+      <div class="nps-row" id="nps-btns">
+        <button class="nps-btn" onclick="selectNPS(this,0)">0</button>
+        <button class="nps-btn" onclick="selectNPS(this,1)">1</button>
+        <button class="nps-btn" onclick="selectNPS(this,2)">2</button>
+        <button class="nps-btn" onclick="selectNPS(this,3)">3</button>
+        <button class="nps-btn" onclick="selectNPS(this,4)">4</button>
+        <button class="nps-btn" onclick="selectNPS(this,5)">5</button>
+        <button class="nps-btn" onclick="selectNPS(this,6)">6</button>
+        <button class="nps-btn" onclick="selectNPS(this,7)">7</button>
+        <button class="nps-btn" onclick="selectNPS(this,8)">8</button>
+        <button class="nps-btn" onclick="selectNPS(this,9)">9</button>
+        <button class="nps-btn" onclick="selectNPS(this,10)">10</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text-light);">
+        <span>Not likely</span><span>Very likely</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROFILE SCREEN ===== -->
+<div id="screen-profile" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="sh-title">My Profile</div></div>
+  </div>
+  <div class="scroll-content">
+    <div class="profile-header">
+      <div class="profile-avatar">N</div>
+      <div class="profile-name">Nur Aisyah bt Ahmad</div>
+      <div class="profile-id">MRN: A-2025-04871 | IC: 920615-10-5281</div>
+    </div>
+    <div class="card" style="margin-top:0;">
+      <div class="profile-row">
+        <div class="profile-stat"><div class="ps-num">8</div><div class="ps-label">Visits</div></div>
+        <div class="profile-stat"><div class="ps-num">24</div><div class="ps-label">Weeks Pregnant</div></div>
+        <div class="profile-stat"><div class="ps-num">1</div><div class="ps-label">Child</div></div>
+      </div>
+    </div>
+
+    <div style="background:white;margin-top:14px;">
+      <div class="profile-menu-item"><div class="pmi-icon">👤</div><div class="pmi-label">Personal Information</div><div class="pmi-arrow">›</div></div>
+      <div class="profile-menu-item"><div class="pmi-icon">🔔</div><div class="pmi-label">Notification Settings</div><div class="pmi-arrow">›</div></div>
+      <div class="profile-menu-item"><div class="pmi-icon">🔒</div><div class="pmi-label">Privacy & PDPA Consent</div><div class="pmi-arrow">›</div></div>
+      <div class="profile-menu-item"><div class="pmi-icon">📱</div><div class="pmi-label">Linked Family Members</div><div class="pmi-arrow">›</div></div>
+      <div class="profile-menu-item"><div class="pmi-icon">🌐</div><div class="pmi-label">Language / Bahasa</div><div class="pmi-arrow">›</div></div>
+      <div class="profile-menu-item" onclick="showToast('Logged out')"><div class="pmi-icon">🚪</div><div class="pmi-label" style="color:var(--rose)">Log Out</div><div class="pmi-arrow">›</div></div>
+    </div>
+    <div style="text-align:center;padding:20px;font-size:11px;color:var(--text-light);">
+      Protected under Malaysia PDPA 2010<br>
+      KKLIU NO: 2817/2021 · MDA Registered
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="showHome()">
+    <div class="nav-icon">🏠</div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('screen-appt')">
+    <div class="nav-icon">📅</div>
+    <span>Appointment</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('screen-pregnancy')">
+    <div class="nav-icon">🤰</div>
+    <span>Journey</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('screen-edu')">
+    <div class="nav-icon">📚</div>
+    <span>Learn</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('screen-feedback')">
+    <div class="nav-icon">⭐</div>
+    <span>Feedback</span>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let activeScreen = null;
+
+  function showScreen(id) {
+    if (activeScreen) document.getElementById(activeScreen).classList.remove('active');
+    document.getElementById(id).classList.add('active');
+    activeScreen = id;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  }
+
+  function showHome() {
+    if (activeScreen) document.getElementById(activeScreen).classList.remove('active');
+    activeScreen = null;
+    document.querySelectorAll('.nav-item').forEach((n,i) => { if(i===0) n.classList.add('active'); else n.classList.remove('active'); });
+  }
+
+  function goBack() {
+    if (activeScreen) document.getElementById(activeScreen).classList.remove('active');
+    activeScreen = null;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function rateStar(n) {
+    const stars = document.querySelectorAll('.star');
+    stars.forEach((s, i) => {
+      s.style.filter = i < n ? 'grayscale(0)' : 'grayscale(1)';
+    });
+    showToast(n === 5 ? 'Terima kasih! 5 stars! 🌟' : `Rated ${n} stars — Thank you!`);
+  }
+
+  function toggleChip(el) {
+    el.classList.toggle('selected');
+  }
+
+  function selectNPS(btn, val) {
+    document.querySelectorAll('.nps-btn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    showToast(val >= 9 ? 'Thank you! You are a Promoter! 🌟' : val >= 7 ? 'Thank you for your rating!' : 'We appreciate your honest feedback.');
+  }
+</script>
+</body>
+</html>
